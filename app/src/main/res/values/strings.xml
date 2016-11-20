@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ProximityGateOpener</string>
+    <string name="geofence_active">Waiting to reach destination</string>
+    <string name="geofence_inactive">Not listening to location.</string>
+    <string name="not_connected">GoogleApiClient not connected.</string>
+    <string name="geofence_error">Geofencing error:</string>
 </resources>

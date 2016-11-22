@@ -10,17 +10,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="it.graziaeandrea.proximitygateopener.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/textView" />
-
     <ToggleButton
         android:text="ToggleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:layout_marginTop="53dp"
         android:id="@+id/toggleButton" />

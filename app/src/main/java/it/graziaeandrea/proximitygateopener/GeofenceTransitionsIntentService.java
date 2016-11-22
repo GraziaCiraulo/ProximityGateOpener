@@ -7,18 +7,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import static com.google.android.gms.internal.zzs.TAG;
 
-/**
- * Created by Grazia on 20/11/2016.
- */
 public class GeofenceTransitionsIntentService extends IntentService {
-    // Test number
-    private static final String PHONE_NUMBER = "+353<>";
 
     public GeofenceTransitionsIntentService() {
         super("GeoFenceService");
@@ -27,9 +23,16 @@ public class GeofenceTransitionsIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+
         if (geofencingEvent.hasError()) {
             String errorMessage = R.string.geofence_error + " " + geofencingEvent.getErrorCode();
             Log.e(TAG, errorMessage);
+            return;
+        }
+        String phoneNumber = getSharedPreferences(String.valueOf(R.string.preferences), MODE_PRIVATE).getString(String.valueOf(R.string.phoneNumber), "");
+
+        if(phoneNumber.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "No phone number saved", Toast.LENGTH_LONG);
             return;
         }
         // Get the transition type.
@@ -40,7 +43,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
             Log.d(TAG, "Inside the Geofence!");
             Intent callIntent = new Intent(Intent.ACTION_CALL);
             callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            callIntent.setData(Uri.parse("tel:" + PHONE_NUMBER));
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions

@@ -4,4 +4,8 @@
     <string name="geofence_inactive">Not listening to location.</string>
     <string name="not_connected">GoogleApiClient not connected.</string>
     <string name="geofence_error">Geofencing error:</string>
+    <string name="insert_phone_number">Insert phone number</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="preferences">PREFERENCES</string>
+    <string name="phoneNumber">phoneNumber</string>
 </resources>

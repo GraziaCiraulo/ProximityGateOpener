@@ -2,6 +2,7 @@ package it.graziaeandrea.proximitygateopener;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -10,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -32,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements
     private List<Geofence> mFences = new ArrayList<>();
 
     // Properties of the geofence.
-    private static final double LAT = 0;
-    private static final double LNG = 0;
+    private static final double LAT = 0.0;
+    private static final double LNG = 0.0;
     private static final float RADIUS_METERS = 50;
     private static final String NAME = "GEOFENCE";
 
@@ -43,18 +46,38 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private PendingIntent mGeofencePendingIntent;
 
+    private ToggleButton mToggleButton;
+    private EditText mPhoneNumberEditText;
+    private Button mSaveButton;
+    private SharedPreferences mPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final ToggleButton toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
-        toggleButton.setOnClickListener(new View.OnClickListener() {
+        mPreferences = getSharedPreferences(String.valueOf(R.string.preferences), MODE_PRIVATE);
+        mToggleButton = (ToggleButton) findViewById(R.id.toggleButton);
+        mToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (toggleButton.isChecked()) {
+                if (mToggleButton.isChecked()) {
                     startProximityLookup();
                 } else {
                     stopProximityLookup();
+                }
+            }
+        });
+        mPhoneNumberEditText = (EditText) findViewById(R.id.phoneNumberEditText);
+        mSaveButton = (Button) findViewById(R.id.saveButton);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!mPhoneNumberEditText.getText().toString().equals("")) {
+                    String phoneNumber = mPhoneNumberEditText.getText().toString();
+                    mPreferences.edit().putString(String.valueOf(R.string.phoneNumber), mPhoneNumberEditText.getText().toString()).apply();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Enter phone number", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -73,6 +96,16 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String number = mPreferences.getString(String.valueOf(R.string.phoneNumber), "");
+
+        if(!number.isEmpty()) {
+            mPhoneNumberEditText.setText(number);
+        }
     }
 
     /**

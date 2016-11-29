@@ -10,33 +10,88 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/toggle_button_status"
+        android:textSize="18dp"
+        android:id="@+id/statusToggleButtonTextView" />
     <ToggleButton
         android:text="ToggleButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/toggleButton" />
+        android:id="@+id/statusToggleButton" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toggleButton"
         android:text="@string/insert_phone_number"
         android:textSize="18dp"
         android:id="@+id/phoneTextView" />
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="phone"
         android:ems="10"
-        android:layout_below="@+id/phoneTextView"
         android:id="@+id/phoneNumberEditText"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/insert_latitude"
+        android:textSize="18dp"
+        android:id="@+id/latTextView" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/latEditText"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/insert_longitude"
+        android:textSize="18dp"
+        android:id="@+id/lngTextView"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/lngEditText"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/insert_radius"
+        android:textSize="18dp"
+        android:id="@+id/radiusTextView" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/radiusEditText"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/insert_delay_in_time"
+        android:textSize="18dp"
+        android:id="@+id/delayTimeTextView" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/delayTimeEditText"/>
 
     <Button
         android:text="Save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/saveButton"
-        android:layout_below="@+id/editText" />
+        android:layout_below="@+id/delayTimeEditText" />
 
 </LinearLayout>

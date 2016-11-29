@@ -1,11 +1,26 @@
 <resources>
-    <string name="app_name">ProximityGateOpener</string>
+    <string name="app_name">Proximity Gate Opener</string>
+
+    <!--Toast or Snackbar-->
     <string name="geofence_active">Waiting to reach destination</string>
     <string name="geofence_inactive">Not listening to location.</string>
     <string name="not_connected">GoogleApiClient not connected.</string>
     <string name="geofence_error">Geofencing error:</string>
-    <string name="insert_phone_number">Insert phone number</string>
+
+    <!--TextView-->
+    <string name="insert_phone_number">Phone number</string>
+    <string name="insert_delay_in_time">Delay in milliseconds</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="preferences">PREFERENCES</string>
-    <string name="phoneNumber">phoneNumber</string>
+    <string name="insert_radius">Geofence radius (in meters) from destination</string>
+    <string name="insert_latitude">Destination latitude</string>
+    <string name="insert_longitude">Destination longitude</string>
+    <string name="toggle_button_status">Proximity Gate Opener status</string>
+
+    <!--Preferences-->
+    <string name="preferences">Preferences</string>
+    <string name="phoneNumberPreference">phoneNumberPreference</string>
+    <string name="latitudePreference">latitudePreference</string>
+    <string name="longitudePreference">longitudePreference</string>
+    <string name="radiusPreference">radiusPreference</string>
+    <string name="loiteringDelayPreference">loateringDelayPreference</string>
 </resources>

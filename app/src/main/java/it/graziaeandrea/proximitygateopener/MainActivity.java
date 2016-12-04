@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,11 +28,12 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status> {
-    private final String TAG = getClass().getSimpleName();
+    private static final String TAG = "MainActivity";
     private List<Geofence> mFences = new ArrayList<>();
 
     // Properties of the geofence.
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements
     private EditText mLongitudeEditText;
     private EditText mRadiusEditText;
     private EditText mLoiteringDelayTimeEditText;
-    private Button mSaveButton;
+    private static EditText textArea;
+//    private Button mSaveButton;
     private SharedPreferences mPreferences;
 
     @Override
@@ -65,8 +68,21 @@ public class MainActivity extends AppCompatActivity implements
         mLatitudeEditText = (EditText) findViewById(R.id.latEditText);
         mLongitudeEditText = (EditText) findViewById(R.id.lngEditText);
         mRadiusEditText = (EditText) findViewById(R.id.radiusEditText);
+        textArea = (EditText) findViewById(R.id.logEditText);
+        textArea.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                switch (event.getAction() & MotionEvent.ACTION_MASK){
+                    case MotionEvent.ACTION_UP:
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+                return false;
+            }
+        });
         mLoiteringDelayTimeEditText = (EditText) findViewById(R.id.delayTimeEditText);
-        mSaveButton = (Button) findViewById(R.id.saveButton);
+//        mSaveButton = (Button) findViewById(R.id.saveButton);
         mToggleButton = (ToggleButton) findViewById(R.id.statusToggleButton);
         mToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,61 +97,6 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     stopProximityLookup();
                 }
-            }
-        });
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String phoneNumber = mPhoneNumberEditText.getText().toString();
-                String latitude = mLatitudeEditText.getText().toString();
-                String longitude = mLongitudeEditText.getText().toString();
-                String radius = mRadiusEditText.getText().toString();
-                String loiteringDelay = mLoiteringDelayTimeEditText.getText().toString();
-
-                if(!phoneNumber.equals("")) {
-                    mPreferences.edit().putString(String.valueOf(R.string.phoneNumberPreference), phoneNumber).apply();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter phone number", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(!latitude.equals("")) {
-                    mPreferences.edit().putString(String.valueOf(R.string.latitudePreference), latitude).apply();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter destination Latitude", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(!longitude.equals("")) {
-                    mPreferences.edit().putString(String.valueOf(R.string.longitudePreference), longitude).apply();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter destination Longitude", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(!radius.equals("")) {
-                    mPreferences.edit().putString(String.valueOf(R.string.radiusPreference), radius).apply();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter geofence radius", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(!loiteringDelay.equals("")) {
-                    mPreferences.edit().putString(String.valueOf(R.string.loiteringDelayPreference), loiteringDelay).apply();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Enter loitering delay", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                Geofence geofence = new Geofence.Builder()
-                        .setRequestId(NAME)
-                        .setCircularRegion(Double.parseDouble(latitude), Double.parseDouble(longitude), Float.parseFloat(radius))
-                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                        .setLoiteringDelay(Integer.parseInt(loiteringDelay))
-                        .build();
-                mFences.clear();
-                mFences.add(geofence);
             }
         });
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -189,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "Connected to GoogleApiClient");
+        log(TAG, "Connected to GoogleApiClient");
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "Permissions insufficient.");
+            log(TAG, "Permissions insufficient.");
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -205,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements
         Location loc = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (loc != null) {
-            Log.d(TAG, String.format("Current location (%f, %f).", loc.getLatitude(), loc.getLongitude()));
+            log(TAG, String.format("Current location (%f, %f).", loc.getLatitude(), loc.getLongitude()));
         }
     }
 
@@ -213,13 +174,13 @@ public class MainActivity extends AppCompatActivity implements
     public void onConnectionFailed(ConnectionResult result) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        log(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
         // The connection to Google Play services was lost for some reason.
-        Log.d(TAG, "Connection suspended");
+        log(TAG, "Connection suspended");
         // onConnected() will be called again automatically when the service reconnects
     }
 
@@ -235,16 +196,67 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void stopProximityLookup() {
-        Log.d(TAG, "stopProximityLookup");
-
+        log(TAG, "stopProximityLookup");
         // TODO: this should stop any listening Geofences.
     }
 
     private void startProximityLookup() {
-        Log.d(TAG, "startProximityLookup");
+        log(TAG, "startProximityLookup");
+        String phoneNumber = mPhoneNumberEditText.getText().toString();
+        String latitude = mLatitudeEditText.getText().toString();
+        String longitude = mLongitudeEditText.getText().toString();
+        String radius = mRadiusEditText.getText().toString();
+        String loiteringDelay = mLoiteringDelayTimeEditText.getText().toString();
+
+        if(!phoneNumber.equals("")) {
+            mPreferences.edit().putString(String.valueOf(R.string.phoneNumberPreference), phoneNumber).apply();
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter phone number", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(!latitude.equals("")) {
+            mPreferences.edit().putString(String.valueOf(R.string.latitudePreference), latitude).apply();
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter destination Latitude", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(!longitude.equals("")) {
+            mPreferences.edit().putString(String.valueOf(R.string.longitudePreference), longitude).apply();
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter destination Longitude", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(!radius.equals("")) {
+            mPreferences.edit().putString(String.valueOf(R.string.radiusPreference), radius).apply();
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter geofence radius", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(!loiteringDelay.equals("")) {
+            mPreferences.edit().putString(String.valueOf(R.string.loiteringDelayPreference), loiteringDelay).apply();
+        } else {
+            Toast.makeText(getApplicationContext(), "Enter loitering delay", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Geofence geofence = new Geofence.Builder()
+                .setRequestId(NAME)
+                .setCircularRegion(Double.parseDouble(latitude), Double.parseDouble(longitude), Float.parseFloat(radius))
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setLoiteringDelay(Integer.parseInt(loiteringDelay))
+                .build();
+        mFences.clear();
+        mFences.add(geofence);
 
         if (!mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
+            String message = getString(R.string.not_connected);
+            log(TAG, message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -255,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements
                     getGeofencePendingIntent()
             ).setResultCallback(this); // Will call onResult().
         } catch (SecurityException e) {
-            Log.e(TAG, "Missing permissions: " + e.getMessage());
+            log(TAG, "Missing permissions: " + e.getMessage());
         }
     }
 
@@ -283,15 +295,26 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onResult(@NonNull Status status) {
-        if (status.isSuccess()) {
-            mGeofencingActive = !mGeofencingActive;
 
-            Toast.makeText(
-                    this,
-                    getString(mGeofencingActive ? R.string.geofence_active :
-                            R.string.geofence_inactive),
-                    Toast.LENGTH_SHORT
-            ).show();
+        if (status.isSuccess()) {
+            log(TAG, "Status is success");
+            mGeofencingActive = !mGeofencingActive;
+            String string = getString(mGeofencingActive ? R.string.geofence_active :
+                    R.string.geofence_inactive);
+            log(TAG, string);
+            Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void log(String TAG, String string) {
+        Log.d(TAG, string);
+        textArea.setText(textArea.getText()+getCurrentTime()+" "+string+"\n");
+    }
+
+    /*
+    Return current date time without using the deprecated class Time
+    */
+    public static String getCurrentTime() {
+        return android.text.format.DateFormat.format("HH:mm:ss", new java.util.Date()).toString();
     }
 }
